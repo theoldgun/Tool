@@ -9,12 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-
-
-
-
 public class cutFile {
-	int w =2;
 	private static Scanner scan;
 	public static void readAndWrite(String readPath, List<String> outPutNameList) throws Exception {
 		File inPutFile = new File(readPath);
