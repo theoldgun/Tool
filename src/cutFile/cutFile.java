@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Scanner;
 
 
+
+
+
 public class cutFile {
 	private static Scanner scan;
 	public static void readAndWrite(String readPath, List<String> outPutNameList) throws Exception {
