@@ -5,86 +5,72 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
 
 public class cutFile {
-	private static Scanner scan;
-	public static void readAndWrite(String readPath, List<String> outPutNameList) throws Exception {
+	// C:\Users\PC090\Desktop\ChoiceTest7-s02.2_e01_new_20170515.jtl
+	public static void readAndWrite(String readPath, String nums) throws Exception {
 		File inPutFile = new File(readPath);
-		BufferedReader reader = null;
-		reader = new BufferedReader(new FileReader(inPutFile));
+		BufferedReader reader = new BufferedReader(new FileReader(inPutFile));
 
 		String line1 = reader.readLine();
 		String line2 = reader.readLine();
-		String end = "/r</testResults>";
+		String end = "\n</testResults>";
+
+		
 		
 		String tempString = null;
-//		int line = 1;
-		for (int i = 0; i < outPutNameList.size(); i++) {
-			FileWriter writer = mikDir(outPutNameList.get(i));
-			if (i == 0){
-				writer.write(line1);
-				writer.write(line2);
-				while ((tempString = reader.readLine()) != null) {
-					if (tempString.contains("2-1")) {
+		FileWriter writer = null;
+		FileWriter writerErr = null;
+		
+		writerErr = mikDir("error.jtl");
+		for (int i = 0; i <  Integer.parseInt(nums); i++) {
+			if (writer == null) {
+				writer = mikDir(i + ".jtl");
+				WriteHeader(line1, line2, writer);
+			}
+
+			while ((tempString = reader.readLine()) != null) {
+				if (tempString.contains("rc=\"200\"")){
+					if (tempString.contains((i + 2) + "-1")) {
 						writer.write(end);
+						writer.close();
+						writer = mikDir((i + 1) + ".jtl");
+						WriteHeader(line1, line2, writer);
+						writer.write(tempString + "\n");
 						break;
 					}
-					writer.write(tempString);
-//					System.out.println("line " + line + ": " + tempString);
-//					line++;
+					writer.write(tempString + "\n");
+				}else{
+					writerErr.write(tempString + "\n");
 				}
-			}else if(i == outPutNameList.size()-1){
-				while ((tempString = reader.readLine()) != null) {
-					if (tempString.contains("5-1")) {
-						writer.write(line1);
-						writer.write(line2);
-					}
-					writer.write(tempString);
-				}
-			}else {
-				String x = String.valueOf(i+1);
-				String y = String.valueOf(i+2);
-					while ((tempString = reader.readLine()) != null) {
-						if (tempString.contains(x + "-1")) {
-							writer.write(line1);
-							writer.write(line2);
-						}
-						writer.write(tempString);
-						if (tempString.contains(y + "-1")) {
-							writer.write(end);
-							break;
-						}
-					}
 			}
-			writer.close();
 		}
-//		}
+		writerErr.close();
+		writer.close();
 		reader.close();
+		System.out.println("output files end");
 	}
-	
-	public static FileWriter mikDir(String writeName) throws IOException{
+
+	private static void WriteHeader(String line1, String line2, FileWriter writer) throws IOException {
+		writer.write(line1 + "\n");
+		writer.write(line2 + "\n");
+	}
+
+	public static FileWriter mikDir(String writeName) throws IOException {
 		File outPutFile = new File(writeName);
 		FileWriter writer = new FileWriter(outPutFile);
-		if ( !outPutFile.exists()) {
-        	outPutFile.createNewFile();
-        }
+		if (!outPutFile.exists()) {
+			outPutFile.createNewFile();
+		}
 		return writer;
 	}
-	
+
 	public static void main(String[] args) throws Exception {
-		  scan = new Scanner(System.in);
-		  System.out.println("readPath£º");
-		  String readPath = scan.nextLine();
-		  List<String> outPutNameList = new ArrayList<>();
-		  for (int i = 0; i < 5; i++) {
-			  System.out.println("outputname£º" + i);
-			  String output = scan.nextLine();
-			  outPutNameList.add(output);
+		if (args.length < 2) {
+			System.out.println("parameter not enough");
+			System.exit(1);
 		}
-		  readAndWrite(readPath, outPutNameList);
+		System.out.println("readPath:" + args[0] + "fileNums" + args[1]);
+		readAndWrite(args[0], args[1]);
 	}
 }
-
